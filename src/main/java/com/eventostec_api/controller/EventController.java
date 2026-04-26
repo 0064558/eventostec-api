@@ -1,6 +1,6 @@
 package com.eventostec_api.controller;
 
-import com.eventostec_api.domain.EventRequestDTO;
+import com.eventostec_api.domain.event.EventRequestDTO;
 import com.eventostec_api.domain.event.Event;
 import com.eventostec_api.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;

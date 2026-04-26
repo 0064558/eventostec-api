@@ -1,7 +1,7 @@
 package com.eventostec_api.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.eventostec_api.domain.EventRequestDTO;
+import com.eventostec_api.domain.event.EventRequestDTO;
 import com.eventostec_api.domain.event.Event;
 import com.eventostec_api.repositories.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
