@@ -25,9 +25,9 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.Arrays.stream;
 
 @Service
+// Serviço responsável por gerenciar as operações relacionadas aos eventos, como criação, consulta de eventos futuros, consulta de eventos filtrados e obtenção de detalhes de um evento específico.
 public class EventService {
 
     @Value("${aws.bucket.name}")

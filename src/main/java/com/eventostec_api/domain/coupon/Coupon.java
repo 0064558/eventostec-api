@@ -16,6 +16,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+// Entidade para representar um cupom de desconto associado a um evento, contendo informações como código do cupom, valor do desconto e data de validade.
 public class Coupon {
     @Id
     @GeneratedValue

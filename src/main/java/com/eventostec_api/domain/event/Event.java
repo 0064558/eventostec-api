@@ -16,6 +16,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+// Entidade para representar um evento, contendo informações como título, descrição, URL da imagem, URL do evento, se é remoto ou presencial, data e endereço associado.
 public class Event {
     @Id
     @GeneratedValue

@@ -11,6 +11,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping
+// Controlador responsável por gerenciar as operações relacionadas aos cupons, como criação, associação a eventos e consulta de cupons válidos para um evento específico.
 public class CouponController {
     @Autowired
     private CouponService couponService;

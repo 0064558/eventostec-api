@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Date;
 import java.util.UUID;
 
+// Repositório para gerenciar as operações de persistência relacionadas à entidade Event, permitindo realizar operações CRUD (Create, Read, Update, Delete) no banco de dados.
 public interface EventRepository extends JpaRepository<Event, UUID> {
     @Query("SELECT e FROM Event e LEFT JOIN e.address a WHERE e.date >= :currentDate")
     Page<Event> findUpComingEvents(@Param("currentDate") java.util.Date currentDate, Pageable pageable);

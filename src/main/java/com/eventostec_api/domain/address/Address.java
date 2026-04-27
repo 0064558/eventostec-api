@@ -15,6 +15,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+// Entidade para representar o endereço de um evento, contendo informações como cidade e estado (UF).
 public class Address {
     @Id
     @GeneratedValue
