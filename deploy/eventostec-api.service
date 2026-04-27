@@ -1,0 +1,18 @@
+[Unit]
+Description=EventosTec API (Spring Boot)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/opt/eventostec-api
+EnvironmentFile=/etc/eventostec-api/eventostec-api.env
+ExecStart=/usr/bin/java -jar /opt/eventostec-api/eventostec-api.jar
+SuccessExitStatus=143
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
