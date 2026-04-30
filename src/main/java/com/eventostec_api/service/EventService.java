@@ -19,6 +19,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -91,11 +94,24 @@ public class EventService {
         title = (title != null) ? title : "";
         city = (city != null) ? city : "";
         uf = (uf != null) ? uf : "";
-        // Define a data atual para garantir que eventos passados não sejam retornados
+        // Usa a data atual como ponto de partida para evitar eventos já ocorridos.
         Date now = Date.from(Instant.now());
-        startDate = (startDate != null) ? startDate : now;
-        // Define a data final como a data atual para garantir que eventos futuros não sejam retornados
-        endDate = (endDate != null) ? endDate : new Date();
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        if (startDate == null) {
+            startDate = now;
+        } else {
+            LocalDate startLocalDate = startDate.toInstant().atZone(zoneId).toLocalDate();
+            startDate = Date.from(startLocalDate.atStartOfDay(zoneId).toInstant());
+        }
+
+        if (endDate == null) {
+            LocalDate farFuture = LocalDate.now(zoneId).plusYears(50);
+            endDate = Date.from(farFuture.atTime(LocalTime.MAX).atZone(zoneId).toInstant());
+        } else {
+            LocalDate endLocalDate = endDate.toInstant().atZone(zoneId).toLocalDate();
+            endDate = Date.from(endLocalDate.atTime(LocalTime.MAX).atZone(zoneId).toInstant());
+        }
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Event> eventsPage = this.eventRepository.findFilteredEvents(title, city, uf, startDate, endDate, pageable);
