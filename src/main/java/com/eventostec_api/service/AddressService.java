@@ -18,7 +18,19 @@ public class AddressService {
         address.setCity(data.city());
         address.setUf(data.uf());
         address.setEvent(event);
+        event.setAddress(address);
 
         return addressRepository.save(address);
+    }
+
+    public void deleteAddress(Address address) {
+        if (address != null) {
+            Event event = address.getEvent();
+            if (event != null) {
+                event.setAddress(null);
+            }
+
+            addressRepository.delete(address);
+        }
     }
 }

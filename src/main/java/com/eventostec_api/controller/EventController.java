@@ -45,7 +45,7 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EventResponseDTO>> getEvents(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size ) {
+    public ResponseEntity<List<EventResponseDTO>> getEvents(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         // Lógica para buscar o evento pelo ID e retornar os detalhes
         List<EventResponseDTO> allEvents = this.eventService.getUpcomingEvents(page, size);
 
@@ -63,6 +63,36 @@ public class EventController {
         // Lógica para buscar o evento pelo ID e retornar os detalhes
         List<EventResponseDTO> filteredEvents = this.eventService.getFilteredEvents(page, size, title, city, uf, startDate, endDate);
         return ResponseEntity.ok(filteredEvents);
+    }
+
+    @PutMapping(value = "/{eventId}", consumes = "multipart/form-data")
+    public ResponseEntity<EventResponseDTO> updateEvent(
+            @PathVariable UUID eventId,
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("date") Long date,
+            @RequestParam(value = "city", required = false) String city,
+            @RequestParam(value = "uf", required = false) String uf,
+            @RequestParam("remote") Boolean remote,
+            @RequestParam("eventUrl") String eventUrl,
+            @RequestParam(value = "image", required = false) MultipartFile image
+    ) {
+        EventRequestDTO eventRequestDTO = new EventRequestDTO(
+                title, description, date, city, uf, remote, eventUrl, image
+        );
+
+        Event updatedEvent = this.eventService.updateEvent(eventId, eventRequestDTO);
+        return ResponseEntity.ok(new EventResponseDTO(
+                updatedEvent.getId(),
+                updatedEvent.getTitle(),
+                updatedEvent.getDescription(),
+                updatedEvent.getDate(),
+                updatedEvent.getAddress() != null ? updatedEvent.getAddress().getCity() : "",
+                updatedEvent.getAddress() != null ? updatedEvent.getAddress().getUf() : "",
+                updatedEvent.getRemote(),
+                updatedEvent.getEventUrl(),
+                updatedEvent.getImgUrl()
+        ));
     }
 }
 

@@ -1,12 +1,14 @@
 package com.eventostec_api.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.eventostec_api.domain.address.Address;
 import com.eventostec_api.domain.coupon.Coupon;
+import com.eventostec_api.domain.event.Event;
 import com.eventostec_api.domain.event.EventDetailsDTO;
 import com.eventostec_api.domain.event.EventRequestDTO;
-import com.eventostec_api.domain.event.Event;
 import com.eventostec_api.domain.event.EventResponseDTO;
 import com.eventostec_api.repositories.EventRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -28,9 +30,8 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
 @Service
-// Serviço responsável por gerenciar as operações relacionadas aos eventos, como criação, consulta de eventos futuros, consulta de eventos filtrados e obtenção de detalhes de um evento específico.
+// ServiÃ§o responsÃ¡vel por gerenciar as operaÃ§Ãµes relacionadas aos eventos, como criaÃ§Ã£o, consulta de eventos futuros, consulta de eventos filtrados e obtenÃ§Ã£o de detalhes de um evento especÃ­fico.
 public class EventService {
 
     @Value("${aws.bucket.name}")
@@ -52,7 +53,7 @@ public class EventService {
         String imgUrl = null;
 
         if (data.image() != null) {
-            // Lógica para salvar a imagem e obter a URL
+            // LÃ³gica para salvar a imagem e obter a URL
             imgUrl = this.uploadImg(data.image());
         }
 
@@ -67,7 +68,7 @@ public class EventService {
         eventRepository.save(newEvent);
 
         if (!data.remote()) {
-            // Lógica para criar o endereço do evento
+            // LÃ³gica para criar o endereÃ§o do evento
             addressService.createAddress(data, newEvent);
         }
 
@@ -94,7 +95,7 @@ public class EventService {
         title = (title != null) ? title : "";
         city = (city != null) ? city : "";
         uf = (uf != null) ? uf : "";
-        // Usa a data atual como ponto de partida para evitar eventos já ocorridos.
+        // Usa a data atual como ponto de partida para evitar eventos jÃ¡ ocorridos.
         Date now = Date.from(Instant.now());
         ZoneId zoneId = ZoneId.systemDefault();
 
@@ -152,13 +153,81 @@ public class EventService {
                 couponDTOS);
     }
 
+    // update event
+    @Transactional
+    public Event updateEvent(UUID eventId, EventRequestDTO data) {
+        Event updateEvent = eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        validateUpdateRequest(data);
+
+        updateEvent.setTitle(data.title());
+        updateEvent.setDescription(data.description());
+        updateEvent.setDate(new Date(data.date()));
+        updateEvent.setRemote(data.remote());
+        updateEvent.setEventUrl(data.eventUrl());
+
+        if (data.image() != null) {
+            // Lógica para salvar a imagem e obter a URL
+            updateEvent.setImgUrl(this.uploadImg(data.image()));
+        }
+
+        Address currentAddress = updateEvent.getAddress();
+
+        if (!data.remote()) {
+            if (currentAddress != null) {
+                currentAddress.setCity(data.city());
+                currentAddress.setUf(data.uf());
+            } else {
+                addressService.createAddress(data, updateEvent);
+            }
+        } else if (currentAddress != null) {
+            addressService.deleteAddress(currentAddress);
+        }
+
+        eventRepository.save(updateEvent);
+        return updateEvent;
+    }
+
+    private void validateUpdateRequest(EventRequestDTO data) {
+        if (data.title() == null || data.title().isBlank()) {
+            throw new IllegalArgumentException("Title is required");
+        }
+
+        if (data.description() == null || data.description().isBlank()) {
+            throw new IllegalArgumentException("Description is required");
+        }
+
+        if (data.eventUrl() == null || data.eventUrl().isBlank()) {
+            throw new IllegalArgumentException("Event URL is required");
+        }
+
+        if (data.date() == null) {
+            throw new IllegalArgumentException("Date is required");
+        }
+
+        if (data.remote() == null) {
+            throw new IllegalArgumentException("Remote is required");
+        }
+
+        boolean hasCity = data.city() != null && !data.city().isBlank();
+        boolean hasUf = data.uf() != null && !data.uf().isBlank();
+
+        if (Boolean.TRUE.equals(data.remote()) && (hasCity || hasUf)) {
+            throw new IllegalArgumentException("Remote event must not have city or uf");
+        }
+
+        if (Boolean.FALSE.equals(data.remote()) && (!hasCity || !hasUf)) {
+            throw new IllegalArgumentException("Presential event requires city and uf");
+        }
+    }
+
     private String uploadImg(MultipartFile multipartFile) {
         String fileName = UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
 
         try {
             File file = this.convertMultipartToFile(multipartFile);
             s3Client.putObject(bucketName, fileName, file);
-            file.delete(); // Deleta o arquivo local após o upload
+            file.delete(); // Deleta o arquivo local apÃ³s o upload
             return s3Client.getUrl(bucketName, fileName).toString();
         } catch (Exception e) {
             System.out.println("Error to upload file: " + e.getMessage());
