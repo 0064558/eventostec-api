@@ -188,6 +188,12 @@ public class EventService {
         return updateEvent;
     }
 
+    public void deleteEvent(UUID eventId) {
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        eventRepository.delete(event);
+    }
+
     private void validateUpdateRequest(EventRequestDTO data) {
         if (data.title() == null || data.title().isBlank()) {
             throw new IllegalArgumentException("Title is required");
