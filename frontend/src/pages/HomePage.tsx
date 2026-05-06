@@ -61,15 +61,14 @@ export function HomePage() {
             <Link className="button solid" to="/eventos/novo">
               Cadastrar novo evento
             </Link>
-          ) : (
-            <Link className="button solid" to="/admin/login">
-              Acesso admin
-            </Link>
-          )}
-          <span className="hero-status">
-            {isPending ? 'Atualizando filtros...' : 'Filtros ativos em tempo real'}
-          </span>
+          ) : null}
         </div>
+        {!isAdmin ? (
+          <p className="admin-cta">
+            É um administrador?{' '}
+            <Link to="/admin/login">Faça login para gerenciar eventos</Link>.
+          </p>
+        ) : null}
       </div>
 
       <section className="filters-panel">

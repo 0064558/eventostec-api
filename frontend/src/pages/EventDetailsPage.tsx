@@ -97,6 +97,7 @@ export function EventDetailsPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const [isCouponFormOpen, setIsCouponFormOpen] = useState(false);
   const isAdmin = isAuthenticated();
 
   const detailsQuery = useQuery({
@@ -430,7 +431,18 @@ export function EventDetailsPage() {
 
       <section className="details-grid">
         <article className="panel">
-          <h2>Cupons válidos</h2>
+          <div className="filters-head">
+            <h2>Cupons válidos</h2>
+            {isAdmin ? (
+              <button
+                type="button"
+                className="button ghost"
+                onClick={() => setIsCouponFormOpen((current) => !current)}
+              >
+                {isCouponFormOpen ? 'Fechar' : 'Cadastrar cupom'}
+              </button>
+            ) : null}
+          </div>
           {event.coupons.length === 0 ? (
             <p className="status-inline">Ainda não há cupons disponíveis para este evento.</p>
           ) : (
@@ -449,44 +461,57 @@ export function EventDetailsPage() {
         </article>
 
         <article className="panel">
-          <h2>Cadastrar cupom</h2>
-          <form
-            className="form-grid"
-            onSubmit={handleSubmit((values) => couponMutation.mutate(values))}
-          >
-            <label>
-              Código
-              <input placeholder="EX: JAVA20" {...register('code')} />
-              {errors.code ? <small>{errors.code.message}</small> : null}
-            </label>
-            <label>
-              Desconto (%)
-              <input
-                type="number"
-                min={1}
-                max={100}
-                {...register('discount', { valueAsNumber: true })}
-              />
-              {errors.discount ? <small>{errors.discount.message}</small> : null}
-            </label>
-            <label>
-              Validade
-              <input type="datetime-local" {...register('valid')} />
-              {errors.valid ? <small>{errors.valid.message}</small> : null}
-            </label>
+          <h2>Cadastro de cupom</h2>
+          {!isAdmin ? (
+            <p className="status-inline">
+              Apenas administradores podem cadastrar cupons.{' '}
+              <Link to="/admin/login">Entrar como admin</Link>.
+            </p>
+          ) : null}
+          {isAdmin && !isCouponFormOpen ? (
+            <p className="status-inline">
+              Clique em "Cadastrar cupom" para adicionar um novo cupom.
+            </p>
+          ) : null}
+          {isAdmin && isCouponFormOpen ? (
+            <form
+              className="form-grid"
+              onSubmit={handleSubmit((values) => couponMutation.mutate(values))}
+            >
+              <label>
+                Código
+                <input placeholder="EX: JAVA20" {...register('code')} />
+                {errors.code ? <small>{errors.code.message}</small> : null}
+              </label>
+              <label>
+                Desconto (%)
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  {...register('discount', { valueAsNumber: true })}
+                />
+                {errors.discount ? <small>{errors.discount.message}</small> : null}
+              </label>
+              <label>
+                Validade
+                <input type="datetime-local" {...register('valid')} />
+                {errors.valid ? <small>{errors.valid.message}</small> : null}
+              </label>
 
-            <button type="submit" className="button solid" disabled={couponMutation.isPending}>
-              {couponMutation.isPending ? 'Salvando...' : 'Salvar cupom'}
-            </button>
-            {couponMutation.isError ? (
-              <p className="status-inline error">
-                Não foi possível salvar o cupom. Verifique os dados e tente novamente.
-              </p>
-            ) : null}
-            {couponMutation.isSuccess ? (
-              <p className="status-inline success">Cupom cadastrado com sucesso.</p>
-            ) : null}
-          </form>
+              <button type="submit" className="button solid" disabled={couponMutation.isPending}>
+                {couponMutation.isPending ? 'Salvando...' : 'Salvar cupom'}
+              </button>
+              {couponMutation.isError ? (
+                <p className="status-inline error">
+                  Não foi possível salvar o cupom. Verifique os dados e tente novamente.
+                </p>
+              ) : null}
+              {couponMutation.isSuccess ? (
+                <p className="status-inline success">Cupom cadastrado com sucesso.</p>
+              ) : null}
+            </form>
+          ) : null}
         </article>
       </section>
     </section>
