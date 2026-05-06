@@ -56,7 +56,7 @@ public class EventService {
         String imgUrl = null;
 
         if (data.image() != null) {
-            // LÃ³gica para salvar a imagem e obter a URL
+            // Lógica para salvar a imagem e obter a URL
             imgUrl = this.uploadImg(data.image());
         }
 
@@ -71,7 +71,7 @@ public class EventService {
         eventRepository.save(newEvent);
 
         if (!data.remote()) {
-            // LÃ³gica para criar o endereÃ§o do evento
+            // Lógica para criar o endereÃ§o do evento
             addressService.createAddress(data, newEvent);
         }
 
@@ -98,7 +98,7 @@ public class EventService {
         title = (title != null) ? title : "";
         city = (city != null) ? city : "";
         uf = (uf != null) ? uf : "";
-        // Usa a data atual como ponto de partida para evitar eventos jÃ¡ ocorridos.
+        // Usa a data atual como ponto de partida para evitar eventos já ocorridos.
         Date now = Date.from(Instant.now());
         ZoneId zoneId = ZoneId.systemDefault();
 
