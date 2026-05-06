@@ -24,17 +24,37 @@ public class EventController {
     private EventService eventService;
 
     @PostMapping(consumes = "multipart/form-data")
-    public ResponseEntity<Event> createEvent(@RequestParam("title") String title,
-                                             @RequestParam(value = "description", required = false) String description,
-                                             @RequestParam("date") Long date,
-                                             @RequestParam("city") String city,
-                                             @RequestParam("uf") String uf,
-                                             @RequestParam("remote") Boolean remote,
-                                             @RequestParam("eventUrl") String eventUrl,
-                                             @RequestParam(value = "image", required = false) MultipartFile image) {
-        EventRequestDTO eventRequestDTO = new EventRequestDTO(title, description, date, city, uf, remote, eventUrl, image);
+    public ResponseEntity<EventResponseDTO> createEvent(@RequestParam("title") String title,
+                                                        @RequestParam(value = "description", required = false) String description,
+                                                        @RequestParam("date") Long date,
+                                                        @RequestParam("city") String city,
+                                                        @RequestParam("uf") String uf,
+                                                        @RequestParam("remote") Boolean remote,
+                                                        @RequestParam("eventUrl") String eventUrl,
+                                                        @RequestParam(value = "image", required = false) MultipartFile image) {
+        EventRequestDTO eventRequestDTO = new EventRequestDTO(
+            title,
+            description,
+            date,
+            city,
+            uf,
+            remote,
+            eventUrl,
+            image,
+            false
+        );
         Event newEvent = this.eventService.createEvent(eventRequestDTO);
-        return ResponseEntity.ok(newEvent);
+        return ResponseEntity.ok(new EventResponseDTO(
+            newEvent.getId(),
+            newEvent.getTitle(),
+            newEvent.getDescription(),
+            newEvent.getDate(),
+            newEvent.getAddress() != null ? newEvent.getAddress().getCity() : "",
+            newEvent.getAddress() != null ? newEvent.getAddress().getUf() : "",
+            newEvent.getRemote(),
+            newEvent.getEventUrl(),
+            newEvent.getImgUrl()
+        ));
     }
 
     @GetMapping("/{eventId}")
@@ -75,10 +95,19 @@ public class EventController {
             @RequestParam(value = "uf", required = false) String uf,
             @RequestParam("remote") Boolean remote,
             @RequestParam("eventUrl") String eventUrl,
-            @RequestParam(value = "image", required = false) MultipartFile image
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam(value = "removeImage", defaultValue = "false") Boolean removeImage
     ) {
         EventRequestDTO eventRequestDTO = new EventRequestDTO(
-                title, description, date, city, uf, remote, eventUrl, image
+            title,
+            description,
+            date,
+            city,
+            uf,
+            remote,
+            eventUrl,
+            image,
+            removeImage
         );
 
         Event updatedEvent = this.eventService.updateEvent(eventId, eventRequestDTO);

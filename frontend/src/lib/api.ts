@@ -4,6 +4,7 @@ import type {
   EventDetails,
   EventFilters,
   EventSummary,
+  UpdateEventInput,
 } from '../types/api';
 
 const API_BASE_URL =
@@ -133,6 +134,41 @@ export async function createEvent(input: CreateEventInput): Promise<EventSummary
   return request<EventSummary>('/api/events', {
     method: 'POST',
     body: payload,
+  });
+}
+
+export async function updateEvent(
+  eventId: string,
+  input: UpdateEventInput,
+): Promise<EventSummary> {
+  const payload = new FormData();
+  payload.append('title', input.title);
+  payload.append('description', input.description);
+  payload.append('date', String(input.date));
+  if (input.city) {
+    payload.append('city', input.city);
+  }
+  if (input.uf) {
+    payload.append('uf', input.uf.toUpperCase());
+  }
+  payload.append('remote', String(input.remote));
+  payload.append('eventUrl', input.eventUrl);
+  if (input.image) {
+    payload.append('image', input.image);
+  }
+  if (typeof input.removeImage === 'boolean') {
+    payload.append('removeImage', String(input.removeImage));
+  }
+
+  return request<EventSummary>(`/api/events/${eventId}`, {
+    method: 'PUT',
+    body: payload,
+  });
+}
+
+export async function deleteEvent(eventId: string): Promise<void> {
+  await request(`/api/events/${eventId}`, {
+    method: 'DELETE',
   });
 }
 

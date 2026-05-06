@@ -47,6 +47,18 @@ export interface CreateEventInput {
   image?: File;
 }
 
+export interface UpdateEventInput {
+  title: string;
+  description: string;
+  date: number;
+  city?: string;
+  uf?: string;
+  remote: boolean;
+  eventUrl: string;
+  image?: File;
+  removeImage?: boolean;
+}
+
 export interface CreateCouponInput {
   code: string;
   discount: number;

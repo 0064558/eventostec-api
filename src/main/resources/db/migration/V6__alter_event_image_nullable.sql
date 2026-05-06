@@ -1,0 +1,2 @@
+ALTER TABLE event
+    ALTER COLUMN img_url DROP NOT NULL;

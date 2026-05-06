@@ -169,8 +169,13 @@ public class EventService {
         updateEvent.setRemote(data.remote());
         updateEvent.setEventUrl(data.eventUrl());
 
-        if (data.image() != null) {
-            // Lógica para salvar a imagem e obter a URL
+        boolean shouldRemoveImage = Boolean.TRUE.equals(data.removeImage());
+        if (shouldRemoveImage) {
+            removeEventImage(updateEvent);
+        }
+
+        if (data.image() != null && !shouldRemoveImage) {
+            removeEventImage(updateEvent);
             updateEvent.setImgUrl(this.uploadImg(data.image()));
         }
 
@@ -194,10 +199,7 @@ public class EventService {
     public void deleteEvent(UUID eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
-        if (event.getImgUrl() != null && !event.getImgUrl().isBlank()) {
-            String key = extractKeyFromUrl(event.getImgUrl());
-            s3Client.deleteObject(bucketName, key);
-        }
+        removeEventImage(event);
 
         eventRepository.delete(event);
     }
@@ -205,6 +207,24 @@ public class EventService {
     private String extractKeyFromUrl(String imgUrl) {
         URI uri = java.net.URI.create(imgUrl);
         return uri.getPath().substring(1);
+    }
+
+    private void removeEventImage(Event event) {
+        if (event == null) {
+            return;
+        }
+
+        String imgUrl = event.getImgUrl();
+        if (imgUrl != null && !imgUrl.isBlank()) {
+            String key = extractKeyFromUrl(imgUrl);
+            try {
+                s3Client.deleteObject(bucketName, key);
+            } catch (Exception ex) {
+                System.out.println("Error to delete image: " + ex.getMessage());
+            }
+        }
+
+        event.setImgUrl(null);
     }
 
     private void validateUpdateRequest(EventRequestDTO data) {
