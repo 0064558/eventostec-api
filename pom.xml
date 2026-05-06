@@ -28,6 +28,9 @@
 	</scm>
 	<properties>
 		<java.version>25</java.version>
+		<flyway.url>jdbc:postgresql://localhost:5432/eventostec</flyway.url>
+		<flyway.user>postgres</flyway.user>
+		<flyway.password>123456</flyway.password>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -103,6 +106,15 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.flywaydb</groupId>
+				<artifactId>flyway-maven-plugin</artifactId>
+				<configuration>
+					<url>${flyway.url}</url>
+					<user>${flyway.user}</user>
+					<password>${flyway.password}</password>
 				</configuration>
 			</plugin>
 			<plugin>
