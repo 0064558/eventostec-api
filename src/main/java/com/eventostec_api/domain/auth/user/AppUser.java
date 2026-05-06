@@ -1,4 +1,4 @@
-package com.eventostec_api.domain.appUser;
+package com.eventostec_api.domain.auth.user;
 
 import com.eventostec_api.domain.enums.Role;
 import jakarta.persistence.*;
@@ -37,6 +37,5 @@ public class AppUser {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-
 
 }

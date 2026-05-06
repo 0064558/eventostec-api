@@ -1,6 +1,6 @@
-package com.eventostec_api.service;
+package com.eventostec_api.security;
 
-import com.eventostec_api.domain.appUser.AppUser;
+import com.eventostec_api.domain.auth.user.AppUser;
 import com.eventostec_api.repositories.AppUserRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
