@@ -20,6 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 
 @Service
 // ServiÃ§o responsÃ¡vel por gerenciar as operaÃ§Ãµes relacionadas aos eventos, como criaÃ§Ã£o, consulta de eventos futuros, consulta de eventos filtrados e obtenÃ§Ã£o de detalhes de um evento especÃ­fico.
@@ -191,7 +194,17 @@ public class EventService {
     public void deleteEvent(UUID eventId) {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
+        if (event.getImgUrl() != null && !event.getImgUrl().isBlank()) {
+            String key = extractKeyFromUrl(event.getImgUrl());
+            s3Client.deleteObject(bucketName, key);
+        }
+
         eventRepository.delete(event);
+    }
+
+    private String extractKeyFromUrl(String imgUrl) {
+        URI uri = java.net.URI.create(imgUrl);
+        return uri.getPath().substring(1);
     }
 
     private void validateUpdateRequest(EventRequestDTO data) {
