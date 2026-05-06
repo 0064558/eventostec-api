@@ -4,8 +4,11 @@ import type {
   EventDetails,
   EventFilters,
   EventSummary,
+  LoginRequest,
+  LoginResponse,
   UpdateEventInput,
 } from '../types/api';
+import { getAuthToken } from './auth';
 
 const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') ??
@@ -54,6 +57,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   return (await response.json()) as T;
+}
+
+function getAuthHeaders(): HeadersInit | undefined {
+  const token = getAuthToken();
+  if (!token) {
+    return undefined;
+  }
+
+  return {
+    Authorization: `Bearer ${token}`,
+  };
 }
 
 function hasActiveFilters(filters: EventFilters): boolean {
@@ -134,6 +148,7 @@ export async function createEvent(input: CreateEventInput): Promise<EventSummary
   return request<EventSummary>('/api/events', {
     method: 'POST',
     body: payload,
+    headers: getAuthHeaders(),
   });
 }
 
@@ -163,12 +178,14 @@ export async function updateEvent(
   return request<EventSummary>(`/api/events/${eventId}`, {
     method: 'PUT',
     body: payload,
+    headers: getAuthHeaders(),
   });
 }
 
 export async function deleteEvent(eventId: string): Promise<void> {
   await request(`/api/events/${eventId}`, {
     method: 'DELETE',
+    headers: getAuthHeaders(),
   });
 }
 
@@ -177,6 +194,14 @@ export async function createCoupon(
   input: CreateCouponInput,
 ): Promise<void> {
   await request(`/events/${eventId}`, {
+    method: 'POST',
+    body: JSON.stringify(input),
+    headers: getAuthHeaders(),
+  });
+}
+
+export async function loginAdmin(input: LoginRequest): Promise<LoginResponse> {
+  return request<LoginResponse>('/auth/login', {
     method: 'POST',
     body: JSON.stringify(input),
   });

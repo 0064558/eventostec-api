@@ -64,3 +64,13 @@ export interface CreateCouponInput {
   discount: number;
   valid: number;
 }
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  type: string;
+}

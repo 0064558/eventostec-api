@@ -4,6 +4,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { createEvent } from '../lib/api';
+import { isAuthenticated } from '../lib/auth';
 
 const createEventSchema = z.object({
   title: z.string().min(3, 'Informe um título com ao menos 3 caracteres.'),
@@ -27,6 +28,7 @@ type CreateEventFormValues = z.infer<typeof createEventSchema> & {
 export function CreateEventPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const isAdmin = isAuthenticated();
 
   const {
     register,
@@ -68,6 +70,28 @@ export function CreateEventPage() {
       navigate(`/eventos/${createdEvent.id}`);
     },
   });
+
+  if (!isAdmin) {
+    return (
+      <section className="create-page">
+        <article className="panel">
+          <p className="eyebrow">Acesso restrito</p>
+          <h1>Login admin necessario</h1>
+          <p className="panel-subtitle">
+            Para cadastrar eventos, entre com uma conta administrativa.
+          </p>
+          <div className="form-actions">
+            <Link className="button solid" to="/admin/login">
+              Entrar como admin
+            </Link>
+            <Link className="button ghost" to="/">
+              Voltar
+            </Link>
+          </div>
+        </article>
+      </section>
+    );
+  }
 
   return (
     <section className="create-page">

@@ -5,6 +5,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
 import { createCoupon, deleteEvent, fetchEventDetails, updateEvent } from '../lib/api';
+import { isAuthenticated } from '../lib/auth';
 import { formatDateOnly, formatEventDate } from '../lib/date';
 
 const couponSchema = z.object({
@@ -96,6 +97,7 @@ export function EventDetailsPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const isAdmin = isAuthenticated();
 
   const detailsQuery = useQuery({
     queryKey: ['event-details', eventId],
@@ -247,10 +249,15 @@ export function EventDetailsPage() {
 
   const event = detailsQuery.data;
   const location = event.city ? `${event.city}, ${event.uf}` : 'Remoto';
-  const isUpdateDisabled = updateEventMutation.isPending || deleteEventMutation.isPending;
+  const isUpdateDisabled =
+    !isAdmin || updateEventMutation.isPending || deleteEventMutation.isPending;
 
   function handleDeleteEvent() {
     if (!eventId) {
+      return;
+    }
+
+    if (!isAdmin) {
       return;
     }
 
@@ -289,27 +296,31 @@ export function EventDetailsPage() {
             <Link className="button ghost" to="/">
               Voltar
             </Link>
-            <button
-              type="button"
-              className="button ghost"
-              onClick={() => setIsEditing((current) => !current)}
-              disabled={isUpdateDisabled}
-            >
-              {isEditing ? 'Fechar edição' : 'Editar evento'}
-            </button>
-            <button
-              type="button"
-              className="button ghost"
-              onClick={handleDeleteEvent}
-              disabled={isUpdateDisabled}
-            >
-              {deleteEventMutation.isPending ? 'Excluindo...' : 'Excluir evento'}
-            </button>
+            {isAdmin ? (
+              <button
+                type="button"
+                className="button ghost"
+                onClick={() => setIsEditing((current) => !current)}
+                disabled={isUpdateDisabled}
+              >
+                {isEditing ? 'Fechar edição' : 'Editar evento'}
+              </button>
+            ) : null}
+            {isAdmin ? (
+              <button
+                type="button"
+                className="button ghost"
+                onClick={handleDeleteEvent}
+                disabled={isUpdateDisabled}
+              >
+                {deleteEventMutation.isPending ? 'Excluindo...' : 'Excluir evento'}
+              </button>
+            ) : null}
           </div>
         </div>
       </article>
 
-      {isEditing ? (
+      {isAdmin && isEditing ? (
         <article className="panel">
           <h2>Editar evento</h2>
           <form

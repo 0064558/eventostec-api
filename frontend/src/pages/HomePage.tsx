@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { EventCard } from '../components/EventCard';
 import { fetchEvents } from '../lib/api';
+import { isAuthenticated } from '../lib/auth';
 import type { EventFilters } from '../types/api';
 
 const PAGE_SIZE = 9;
@@ -20,6 +21,7 @@ export function HomePage() {
   const [filters, setFilters] = useState<EventFilters>(initialFilters);
   const deferredFilters = useDeferredValue(filters);
   const [isPending, startTransition] = useTransition();
+  const isAdmin = isAuthenticated();
 
   const eventsQuery = useQuery({
     queryKey: ['events', page, deferredFilters],
@@ -55,9 +57,15 @@ export function HomePage() {
           cupons disponíveis em tempo real.
         </p>
         <div className="hero-actions">
-          <Link className="button solid" to="/eventos/novo">
-            Cadastrar novo evento
-          </Link>
+          {isAdmin ? (
+            <Link className="button solid" to="/eventos/novo">
+              Cadastrar novo evento
+            </Link>
+          ) : (
+            <Link className="button solid" to="/admin/login">
+              Acesso admin
+            </Link>
+          )}
           <span className="hero-status">
             {isPending ? 'Atualizando filtros...' : 'Filtros ativos em tempo real'}
           </span>
