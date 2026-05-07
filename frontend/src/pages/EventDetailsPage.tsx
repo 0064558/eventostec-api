@@ -114,45 +114,35 @@ export function EventDetailsPage() {
     enabled: Boolean(eventId),
   });
 
-  // --- Forms ---
-
-  // Create Coupon Form
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
   } = useForm<CouponFormValues>({
     resolver: zodResolver(couponSchema),
     defaultValues: { code: '', discount: 10, valid: '' },
   });
 
-  // Edit Coupon Form
   const {
     register: registerEditCoupon,
     handleSubmit: handleSubmitEditCoupon,
     reset: resetEditCoupon,
-    formState: { errors: editErrors },
   } = useForm<CouponFormValues>({
     resolver: zodResolver(couponSchema),
   });
 
-  // Update Event Form
   const {
     register: registerUpdate,
     handleSubmit: handleSubmitUpdate,
     control: updateControl,
     reset: resetUpdate,
     setValue: setUpdateValue,
-    formState: { errors: updateErrors },
   } = useForm<UpdateEventFormValues>({
     resolver: zodResolver(updateEventSchema),
   });
 
   const isUpdateRemote = useWatch({ control: updateControl, name: 'remote' });
   const shouldRemoveImage = useWatch({ control: updateControl, name: 'removeImage' });
-
-  // --- Mutations ---
 
   const couponMutation = useMutation({
     mutationFn: (values: CouponFormValues) =>
@@ -243,8 +233,6 @@ export function EventDetailsPage() {
     }
   }, [isUpdateRemote, setUpdateValue]);
 
-  // --- Handlers ---
-
   if (!eventId) return <p className="status-card error">ID de evento inválido.</p>;
   if (detailsQuery.isLoading) return <p className="status-card">Carregando detalhes do evento...</p>;
   if (detailsQuery.isError || !detailsQuery.data) {
@@ -258,7 +246,6 @@ export function EventDetailsPage() {
 
   const event = detailsQuery.data;
   const isUpdateDisabled = !isAdmin || updateEventMutation.isPending || deleteEventMutation.isPending;
-  const isCouponActionDisabled = !isAdmin || couponMutation.isPending || updateCouponMutation.isPending || deleteCouponMutation.isPending;
 
   return (
     <section className="details-page">
