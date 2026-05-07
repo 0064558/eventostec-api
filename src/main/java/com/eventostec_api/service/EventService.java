@@ -1,6 +1,7 @@
 package com.eventostec_api.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.eventostec_api.domain.address.Address;
 import com.eventostec_api.domain.coupon.Coupon;
 import com.eventostec_api.domain.event.Event;
@@ -17,24 +18,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-
 @Service
-// ServiÃ§o responsÃ¡vel por gerenciar as operaÃ§Ãµes relacionadas aos eventos, como criaÃ§Ã£o, consulta de eventos futuros, consulta de eventos filtrados e obtenÃ§Ã£o de detalhes de um evento especÃ­fico.
 public class EventService {
 
     @Value("${aws.bucket.name}")
@@ -55,8 +49,7 @@ public class EventService {
     public Event createEvent(EventRequestDTO data) {
         String imgUrl = null;
 
-        if (data.image() != null) {
-            // Lógica para salvar a imagem e obter a URL
+        if (data.image() != null && !data.image().isEmpty()) {
             imgUrl = this.uploadImg(data.image());
         }
 
@@ -71,7 +64,6 @@ public class EventService {
         eventRepository.save(newEvent);
 
         if (!data.remote()) {
-            // Lógica para criar o endereÃ§o do evento
             addressService.createAddress(data, newEvent);
         }
 
@@ -94,11 +86,19 @@ public class EventService {
                 .stream().toList();
     }
 
-    public List<EventResponseDTO> getFilteredEvents(int page, int size, String title, String city, String uf, Date startDate, Date endDate) {
+    public List<EventResponseDTO> getFilteredEvents(
+            int page,
+            int size,
+            String title,
+            String city,
+            String uf,
+            Date startDate,
+            Date endDate
+    ) {
         title = (title != null) ? title : "";
         city = (city != null) ? city : "";
         uf = (uf != null) ? uf : "";
-        // Usa a data atual como ponto de partida para evitar eventos já ocorridos.
+
         Date now = Date.from(Instant.now());
         ZoneId zoneId = ZoneId.systemDefault();
 
@@ -118,7 +118,10 @@ public class EventService {
         }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<Event> eventsPage = this.eventRepository.findFilteredEvents(title, city, uf, startDate, endDate, pageable);
+        Page<Event> eventsPage = this.eventRepository.findFilteredEvents(
+                title, city, uf, startDate, endDate, pageable
+        );
+
         return eventsPage.map(event -> new EventResponseDTO(
                         event.getId(),
                         event.getTitle(),
@@ -133,10 +136,10 @@ public class EventService {
     }
 
     public EventDetailsDTO getEventDetails(UUID eventId) {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Event not found"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
         List<Coupon> coupons = couponService.consultCoupons(eventId, new Date());
-
         List<EventDetailsDTO.CouponDTO> couponDTOS = coupons.stream()
                 .map(coupon -> new EventDetailsDTO.CouponDTO(
                         coupon.getCode(),
@@ -153,13 +156,14 @@ public class EventService {
                 event.getAddress() != null ? event.getAddress().getUf() : "",
                 event.getImgUrl(),
                 event.getEventUrl(),
-                couponDTOS);
+                couponDTOS
+        );
     }
 
-    // update event
     @Transactional
     public Event updateEvent(UUID eventId, EventRequestDTO data) {
-        Event updateEvent = eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Event not found"));
+        Event updateEvent = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
         validateUpdateRequest(data);
 
@@ -174,7 +178,7 @@ public class EventService {
             removeEventImage(updateEvent);
         }
 
-        if (data.image() != null && !shouldRemoveImage) {
+        if (data.image() != null && !data.image().isEmpty() && !shouldRemoveImage) {
             removeEventImage(updateEvent);
             updateEvent.setImgUrl(this.uploadImg(data.image()));
         }
@@ -197,15 +201,15 @@ public class EventService {
     }
 
     public void deleteEvent(UUID eventId) {
-        Event event = eventRepository.findById(eventId).orElseThrow(() -> new IllegalArgumentException("Event not found"));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
 
         removeEventImage(event);
-
         eventRepository.delete(event);
     }
 
     private String extractKeyFromUrl(String imgUrl) {
-        URI uri = java.net.URI.create(imgUrl);
+        URI uri = URI.create(imgUrl);
         return uri.getPath().substring(1);
     }
 
@@ -261,24 +265,24 @@ public class EventService {
     }
 
     private String uploadImg(MultipartFile multipartFile) {
-        String fileName = UUID.randomUUID() + "-" + multipartFile.getOriginalFilename();
+        String originalName = multipartFile.getOriginalFilename();
+        if (originalName == null || originalName.isBlank()) {
+            originalName = "image";
+        }
 
-        try {
-            File file = this.convertMultipartToFile(multipartFile);
-            s3Client.putObject(bucketName, fileName, file);
-            file.delete(); // Deleta o arquivo local apÃ³s o upload
+        String fileName = UUID.randomUUID() + "-" + originalName.replaceAll("\\s+", "_");
+
+        try (var inputStream = multipartFile.getInputStream()) {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentLength(multipartFile.getSize());
+            if (multipartFile.getContentType() != null && !multipartFile.getContentType().isBlank()) {
+                metadata.setContentType(multipartFile.getContentType());
+            }
+
+            s3Client.putObject(bucketName, fileName, inputStream, metadata);
             return s3Client.getUrl(bucketName, fileName).toString();
         } catch (Exception e) {
-            System.out.println("Error to upload file: " + e.getMessage());
-            return "";
+            throw new IllegalStateException("Error to upload file to S3: " + e.getMessage(), e);
         }
-    }
-
-    private File convertMultipartToFile(MultipartFile multipartFile) throws IOException {
-        File convFile = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(multipartFile.getBytes());
-        fos.close();
-        return convFile;
     }
 }

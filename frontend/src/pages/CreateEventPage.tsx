@@ -98,10 +98,6 @@ export function CreateEventPage() {
       <article className="panel">
         <p className="eyebrow">Novo evento</p>
         <h1>Cadastre um evento em poucos minutos</h1>
-        <p className="panel-subtitle">
-          Este formulário envia os dados em <code>multipart/form-data</code> para a API.
-        </p>
-
         <form
           className="form-grid"
           onSubmit={handleSubmit((formValues) => createEventMutation.mutate(formValues))}
