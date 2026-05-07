@@ -20,7 +20,7 @@ export function HomePage() {
   const [page, setPage] = useState(0);
   const [filters, setFilters] = useState<EventFilters>(initialFilters);
   const deferredFilters = useDeferredValue(filters);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const isAdmin = isAuthenticated();
 
   const eventsQuery = useQuery({
