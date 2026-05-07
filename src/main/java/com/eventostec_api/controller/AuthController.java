@@ -26,7 +26,7 @@ public class AuthController {
         this.userDetailsService = userDetailsService;
     }
 
-    @PostMapping("/login")
+    @PostMapping({"/login", "/login/"})
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO request) {
         authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
