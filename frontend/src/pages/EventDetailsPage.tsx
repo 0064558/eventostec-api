@@ -370,7 +370,7 @@ export function EventDetailsPage() {
         <div className="footer-content">
           <div className="brand-minimal">
             <div className="brand-badge-small"></div>
-            <strong>EventosTec</strong>
+            <strong>EVNT</strong>
           </div>
           <p>© 2026 Desenvolvido por <strong>Rodrigo Alexandre</strong></p>
         </div>
