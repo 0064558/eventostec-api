@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,8 +74,8 @@ public class EventService {
     }
 
     public List<EventResponseDTO> getUpcomingEvents(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Event> eventsPage = this.eventRepository.findUpComingEvents(new Date(), pageable);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").ascending());
+        Page<Event> eventsPage = this.eventRepository.findAllEvents(pageable);
         return eventsPage.map(event -> new EventResponseDTO(
                         event.getId(),
                         event.getTitle(),

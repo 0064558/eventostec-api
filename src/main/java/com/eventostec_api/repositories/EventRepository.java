@@ -10,16 +10,16 @@ import org.springframework.data.repository.query.Param;
 import java.util.Date;
 import java.util.UUID;
 
-// Repositório para gerenciar as operações de persistência relacionadas à entidade Event, permitindo realizar operações CRUD (Create, Read, Update, Delete) no banco de dados.
 public interface EventRepository extends JpaRepository<Event, UUID> {
-    @Query("SELECT e FROM Event e LEFT JOIN e.address a WHERE e.date >= :currentDate")
-    Page<Event> findUpComingEvents(@Param("currentDate") java.util.Date currentDate, Pageable pageable);
+
+    @Query("SELECT e FROM Event e LEFT JOIN e.address a")
+    Page<Event> findAllEvents(Pageable pageable);
 
     @Query("SELECT e FROM Event e LEFT JOIN e.address a " +
-            "WHERE (:title = '' OR LOWER(e.title) LIKE %:title%) " +
-             "AND (:city = '' OR LOWER(a.city) LIKE %:city%) " +
-             "AND (:uf = '' OR LOWER(a.uf) LIKE %:uf%) " +
-             "AND (e.date >= :startDate AND e.date <= :endDate)")
+            "WHERE (:title = '' OR LOWER(e.title) LIKE LOWER(CONCAT('%', :title, '%'))) " +
+            "AND (:city = '' OR LOWER(a.city) LIKE LOWER(CONCAT('%', :city, '%'))) " +
+            "AND (:uf = '' OR LOWER(a.uf) LIKE LOWER(CONCAT('%', :uf, '%'))) " +
+            "AND (e.date >= :startDate AND e.date <= :endDate)")
     Page<Event> findFilteredEvents(
             @Param("title") String title,
             @Param("city") String city,
