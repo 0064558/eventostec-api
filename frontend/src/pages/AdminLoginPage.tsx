@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -15,6 +16,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function AdminLoginPage() {
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -61,7 +63,20 @@ export function AdminLoginPage() {
 
           <label>
             Senha
-            <input type="password" placeholder="Sua senha" {...register('password')} />
+            <div className="password-field">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Sua senha"
+                {...register('password')}
+              />
+              <button
+                type="button"
+                className="button ghost password-toggle"
+                onClick={() => setShowPassword((value) => !value)}
+              >
+                {showPassword ? 'Ocultar' : 'Mostrar'}
+              </button>
+            </div>
             {errors.password ? <small>{errors.password.message}</small> : null}
           </label>
 

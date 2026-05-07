@@ -16,10 +16,10 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     Page<Event> findUpComingEvents(@Param("currentDate") java.util.Date currentDate, Pageable pageable);
 
     @Query("SELECT e FROM Event e LEFT JOIN e.address a " +
-           "WHERE (:title = '' OR e.title LIKE %:title%) " +
-            "AND (:city = '' OR a.city LIKE %:city%) " +
-            "AND (:uf = '' OR a.uf LIKE %:uf%) " +
-            "AND (e.date >= :startDate AND e.date <= :endDate)")
+            "WHERE (:title = '' OR LOWER(e.title) LIKE %:title%) " +
+             "AND (:city = '' OR LOWER(a.city) LIKE %:city%) " +
+             "AND (:uf = '' OR LOWER(a.uf) LIKE %:uf%) " +
+             "AND (e.date >= :startDate AND e.date <= :endDate)")
     Page<Event> findFilteredEvents(
             @Param("title") String title,
             @Param("city") String city,

@@ -97,9 +97,9 @@ public class EventService {
             Date startDate,
             Date endDate
     ) {
-        title = (title != null) ? title : "";
-        city = (city != null) ? city : "";
-        uf = (uf != null) ? uf : "";
+        title = (title != null) ? title.trim().toLowerCase() : "";
+        city = (city != null) ? city.trim().toLowerCase() : "";
+        uf = (uf != null) ? uf.trim().toLowerCase() : "";
 
         Date now = Date.from(Instant.now());
         ZoneId zoneId = ZoneId.systemDefault();

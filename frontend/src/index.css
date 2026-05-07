@@ -330,6 +330,22 @@ textarea:focus {
   border-color: transparent;
 }
 
+.password-field {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.password-field input {
+  flex: 1;
+}
+
+.password-toggle {
+  padding: 0.55rem 0.9rem;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
 .inline-fields {
   display: grid;
   grid-template-columns: 1fr 120px;
