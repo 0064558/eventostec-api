@@ -40,8 +40,8 @@ export interface CreateEventInput {
   title: string;
   description?: string;
   date: number;
-  city: string;
-  uf: string;
+  city?: string;
+  uf?: string;
   remote: boolean;
   eventUrl: string;
   image?: File;

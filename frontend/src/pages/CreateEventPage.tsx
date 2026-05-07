@@ -6,20 +6,39 @@ import { z } from 'zod';
 import { createEvent } from '../lib/api';
 import { isAuthenticated } from '../lib/auth';
 
-const createEventSchema = z.object({
-  title: z.string().min(3, 'Informe um título com ao menos 3 caracteres.'),
-  description: z.string().max(500).optional(),
-  date: z.string().min(1, 'Informe data e hora do evento.'),
-  city: z.string().min(2, 'Informe a cidade.'),
-  uf: z
-    .string()
-    .min(2, 'UF inválida.')
-    .max(2, 'UF inválida.')
-    .transform((value) => value.toUpperCase()),
-  remote: z.boolean(),
-  eventUrl: z.url('Informe uma URL válida.'),
-  image: z.any().optional(),
-});
+const createEventSchema = z
+  .object({
+    title: z.string().min(3, 'Informe um título com ao menos 3 caracteres.'),
+    description: z.string().max(500).optional(),
+    date: z.string().min(1, 'Informe data e hora do evento.'),
+    city: z.string().optional(),
+    uf: z.string().optional(),
+    remote: z.boolean(),
+    eventUrl: z.url('Informe uma URL válida.'),
+    image: z.any().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.remote) {
+      return;
+    }
+
+    if (!data.city || data.city.trim().length < 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['city'],
+        message: 'Informe a cidade.',
+      });
+    }
+
+    const ufValue = data.uf?.trim() ?? '';
+    if (ufValue.length !== 2) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['uf'],
+        message: 'UF inválida.',
+      });
+    }
+  });
 
 type CreateEventFormValues = z.infer<typeof createEventSchema> & {
   image?: FileList;
@@ -59,8 +78,8 @@ export function CreateEventPage() {
         title: formValues.title,
         description: formValues.description,
         date: new Date(formValues.date).getTime(),
-        city: formValues.city,
-        uf: formValues.uf,
+        city: formValues.remote ? undefined : formValues.city?.trim(),
+        uf: formValues.remote ? undefined : formValues.uf?.trim().toUpperCase(),
         remote: formValues.remote,
         eventUrl: formValues.eventUrl,
         image: formValues.image?.item(0) ?? undefined,
@@ -141,13 +160,14 @@ export function CreateEventPage() {
               <input
                 placeholder={isRemote ? 'Online' : 'São Paulo'}
                 {...register('city')}
+                disabled={isRemote}
               />
               {errors.city ? <small>{errors.city.message}</small> : null}
             </label>
 
             <label>
               UF
-              <input placeholder="SP" maxLength={2} {...register('uf')} />
+              <input placeholder="SP" maxLength={2} {...register('uf')} disabled={isRemote} />
               {errors.uf ? <small>{errors.uf.message}</small> : null}
             </label>
           </div>

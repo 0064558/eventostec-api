@@ -27,8 +27,8 @@ public class EventController {
     public ResponseEntity<EventResponseDTO> createEvent(@RequestParam("title") String title,
                                                         @RequestParam(value = "description", required = false) String description,
                                                         @RequestParam("date") Long date,
-                                                        @RequestParam("city") String city,
-                                                        @RequestParam("uf") String uf,
+                                                        @RequestParam(value = "city", required = false) String city,
+                                                        @RequestParam(value = "uf", required = false) String uf,
                                                         @RequestParam("remote") Boolean remote,
                                                         @RequestParam("eventUrl") String eventUrl,
                                                         @RequestParam(value = "image", required = false) MultipartFile image) {

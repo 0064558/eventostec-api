@@ -137,8 +137,12 @@ export async function createEvent(input: CreateEventInput): Promise<EventSummary
   payload.append('title', input.title);
   payload.append('description', input.description ?? '');
   payload.append('date', String(input.date));
-  payload.append('city', input.city);
-  payload.append('uf', input.uf.toUpperCase());
+  if (input.city) {
+    payload.append('city', input.city);
+  }
+  if (input.uf) {
+    payload.append('uf', input.uf.toUpperCase());
+  }
   payload.append('remote', String(input.remote));
   payload.append('eventUrl', input.eventUrl);
   if (input.image) {

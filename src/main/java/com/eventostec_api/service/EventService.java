@@ -47,6 +47,8 @@ public class EventService {
     private CouponService couponService;
 
     public Event createEvent(EventRequestDTO data) {
+        validateCreateRequest(data);
+
         String imgUrl = null;
 
         if (data.image() != null && !data.image().isEmpty()) {
@@ -258,6 +260,31 @@ public class EventService {
         if (Boolean.TRUE.equals(data.remote()) && (hasCity || hasUf)) {
             throw new IllegalArgumentException("Remote event must not have city or uf");
         }
+
+        if (Boolean.FALSE.equals(data.remote()) && (!hasCity || !hasUf)) {
+            throw new IllegalArgumentException("Presential event requires city and uf");
+        }
+    }
+
+    private void validateCreateRequest(EventRequestDTO data) {
+        if (data.title() == null || data.title().isBlank()) {
+            throw new IllegalArgumentException("Title is required");
+        }
+
+        if (data.eventUrl() == null || data.eventUrl().isBlank()) {
+            throw new IllegalArgumentException("Event URL is required");
+        }
+
+        if (data.date() == null) {
+            throw new IllegalArgumentException("Date is required");
+        }
+
+        if (data.remote() == null) {
+            throw new IllegalArgumentException("Remote is required");
+        }
+
+        boolean hasCity = data.city() != null && !data.city().isBlank();
+        boolean hasUf = data.uf() != null && !data.uf().isBlank();
 
         if (Boolean.FALSE.equals(data.remote()) && (!hasCity || !hasUf)) {
             throw new IllegalArgumentException("Presential event requires city and uf");
