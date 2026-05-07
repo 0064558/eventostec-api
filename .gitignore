@@ -3,7 +3,6 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-src/main/java/PasswordHashGenerator.java
 
 ### STS ###
 .apt_generated
@@ -34,4 +33,7 @@ build/
 .vscode/
 deploy/eventostec-api.env
 src/main/resources/application-dev.properties
+src/main/resources/db/migration/V9__seed_admin_user_local.sql
+src/main/resources/db/migration/V10__admin_password_fix_local.sql
+src/main/java/PasswordHashGenerator.java
 

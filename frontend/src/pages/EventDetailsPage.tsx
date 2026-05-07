@@ -461,13 +461,7 @@ export function EventDetailsPage() {
         </article>
 
         <article className="panel">
-          <h2>Cadastro de cupom</h2>
-          {!isAdmin ? (
-            <p className="status-inline">
-              Apenas administradores podem cadastrar cupons.{' '}
-              <Link to="/admin/login">Entrar como admin</Link>.
-            </p>
-          ) : null}
+      
           {isAdmin && !isCouponFormOpen ? (
             <p className="status-inline">
               Clique em "Cadastrar cupom" para adicionar um novo cupom.
