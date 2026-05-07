@@ -103,7 +103,7 @@ export function AdminLoginPage() {
             <div className="brand-badge-small"></div>
             <span className="brand-title">EVNT</span>
           </div>
-          <p>© 2026 Desenvolvido por <strong>Rodrigo Alexandre</strong></p>
+          <p>Desenvolvido por <strong>Rodrigo Alexandre - © 2026</strong></p>
         </div>
       </footer>
     </section>
