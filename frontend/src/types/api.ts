@@ -11,6 +11,7 @@ export interface EventSummary {
 }
 
 export interface CouponDetails {
+  id: string;
   code: string;
   discount: number;
   validUntil: string;

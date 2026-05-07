@@ -570,10 +570,27 @@ textarea:focus-visible {
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 0.75rem 0.9rem;
+  display: grid;
+  gap: 0.65rem;
+  align-items: start;
+}
+
+.coupon-row {
   display: flex;
   justify-content: space-between;
-  gap: 0.5rem;
   align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.coupon-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.coupon-edit-form {
+  margin-top: 0.25rem;
 }
 
 .coupon-list p {
@@ -581,7 +598,7 @@ textarea:focus-visible {
   font-size: 0.84rem;
 }
 
-.coupon-list span {
+.coupon-list .coupon-discount {
   border-radius: 999px;
   padding: 0.3rem 0.58rem;
   background: rgba(66, 216, 197, 0.2);

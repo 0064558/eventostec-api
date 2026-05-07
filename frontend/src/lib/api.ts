@@ -25,6 +25,7 @@ interface RawEventDetails {
   imgUrl: string;
   eventUrl: string;
   coupons: Array<{
+    id: string;
     code: string;
     discount: number;
     validUntil: string;
@@ -200,6 +201,25 @@ export async function createCoupon(
   await request(`/events/${eventId}`, {
     method: 'POST',
     body: JSON.stringify(input),
+    headers: getAuthHeaders(),
+  });
+}
+
+export async function updateCoupon(
+  eventId: string,
+  couponId: string,
+  input: CreateCouponInput,
+): Promise<void> {
+  await request(`/events/${eventId}/coupons/${couponId}`, {
+    method: 'PUT',
+    body: JSON.stringify(input),
+    headers: getAuthHeaders(),
+  });
+}
+
+export async function deleteCoupon(eventId: string, couponId: string): Promise<void> {
+  await request(`/events/${eventId}/coupons/${couponId}`, {
+    method: 'DELETE',
     headers: getAuthHeaders(),
   });
 }

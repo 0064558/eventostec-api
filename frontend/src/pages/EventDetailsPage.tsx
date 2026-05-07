@@ -4,7 +4,14 @@ import { useEffect, useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { z } from 'zod';
-import { createCoupon, deleteEvent, fetchEventDetails, updateEvent } from '../lib/api';
+import {
+  createCoupon,
+  deleteCoupon,
+  deleteEvent,
+  fetchEventDetails,
+  updateCoupon,
+  updateEvent,
+} from '../lib/api';
 import { isAuthenticated } from '../lib/auth';
 import { formatDateOnly, formatEventDate } from '../lib/date';
 
@@ -98,6 +105,7 @@ export function EventDetailsPage() {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isCouponFormOpen, setIsCouponFormOpen] = useState(false);
+  const [editingCouponId, setEditingCouponId] = useState<string | null>(null);
   const isAdmin = isAuthenticated();
 
   const detailsQuery = useQuery({
@@ -111,6 +119,20 @@ export function EventDetailsPage() {
     handleSubmit,
     reset,
     formState: { errors },
+  } = useForm<CouponFormValues>({
+    resolver: zodResolver(couponSchema),
+    defaultValues: {
+      code: '',
+      discount: 10,
+      valid: '',
+    },
+  });
+
+  const {
+    register: registerEditCoupon,
+    handleSubmit: handleSubmitEditCoupon,
+    reset: resetEditCoupon,
+    formState: { errors: editErrors },
   } = useForm<CouponFormValues>({
     resolver: zodResolver(couponSchema),
     defaultValues: {
@@ -160,6 +182,41 @@ export function EventDetailsPage() {
       }),
     onSuccess: async () => {
       reset();
+      await queryClient.invalidateQueries({ queryKey: ['event-details', eventId] });
+    },
+  });
+
+  const updateCouponMutation = useMutation({
+    mutationFn: (values: CouponFormValues) => {
+      if (!eventId || !editingCouponId) {
+        throw new Error('Cupom inválido.');
+      }
+
+      return updateCoupon(eventId, editingCouponId, {
+        code: values.code.toUpperCase().trim(),
+        discount: values.discount,
+        valid: new Date(values.valid).getTime(),
+      });
+    },
+    onSuccess: async () => {
+      setEditingCouponId(null);
+      resetEditCoupon();
+      await queryClient.invalidateQueries({ queryKey: ['event-details', eventId] });
+    },
+  });
+
+  const deleteCouponMutation = useMutation({
+    mutationFn: async (couponId: string) => {
+      if (!eventId) {
+        throw new Error('ID de evento inválido.');
+      }
+      await deleteCoupon(eventId, couponId);
+    },
+    onSuccess: async () => {
+      if (editingCouponId) {
+        setEditingCouponId(null);
+        resetEditCoupon();
+      }
       await queryClient.invalidateQueries({ queryKey: ['event-details', eventId] });
     },
   });
@@ -252,6 +309,11 @@ export function EventDetailsPage() {
   const location = event.city ? `${event.city}, ${event.uf}` : 'Remoto';
   const isUpdateDisabled =
     !isAdmin || updateEventMutation.isPending || deleteEventMutation.isPending;
+  const isCouponActionDisabled =
+    !isAdmin ||
+    couponMutation.isPending ||
+    updateCouponMutation.isPending ||
+    deleteCouponMutation.isPending;
 
   function handleDeleteEvent() {
     if (!eventId) {
@@ -268,6 +330,32 @@ export function EventDetailsPage() {
     }
 
     deleteEventMutation.mutate();
+  }
+
+  function handleEditCoupon(couponId: string, code: string, discount: number, valid: string) {
+    if (!isAdmin) {
+      return;
+    }
+
+    setEditingCouponId(couponId);
+    resetEditCoupon({
+      code,
+      discount,
+      valid: formatDateTimeLocal(valid),
+    });
+  }
+
+  function handleDeleteCoupon(couponId: string) {
+    if (!isAdmin) {
+      return;
+    }
+
+    const confirmed = window.confirm('Deseja realmente excluir este cupom?');
+    if (!confirmed) {
+      return;
+    }
+
+    deleteCouponMutation.mutate(couponId);
   }
 
   return (
@@ -447,15 +535,100 @@ export function EventDetailsPage() {
             <p className="status-inline">Ainda não há cupons disponíveis para este evento.</p>
           ) : (
             <ul className="coupon-list">
-              {event.coupons.map((coupon) => (
-                <li key={`${coupon.code}-${coupon.validUntil}`}>
-                  <div>
-                    <strong>{coupon.code}</strong>
-                    <p>Válido até {formatDateOnly(coupon.validUntil)}</p>
-                  </div>
-                  <span>{coupon.discount}%</span>
-                </li>
-              ))}
+              {event.coupons.map((coupon) => {
+                const isEditingCoupon = editingCouponId === coupon.id;
+                return (
+                  <li key={coupon.id}>
+                    <div className="coupon-row">
+                      <div className="coupon-info">
+                        <strong>{coupon.code}</strong>
+                        <p>Válido até {formatDateOnly(coupon.validUntil)}</p>
+                      </div>
+                      <span className="coupon-discount">{coupon.discount}%</span>
+                    </div>
+                    {isAdmin ? (
+                      <div className="coupon-actions">
+                        <button
+                          type="button"
+                          className="button ghost"
+                          onClick={() =>
+                            handleEditCoupon(
+                              coupon.id,
+                              coupon.code,
+                              coupon.discount,
+                              coupon.validUntil,
+                            )
+                          }
+                          disabled={isCouponActionDisabled}
+                        >
+                          {isEditingCoupon ? 'Editando' : 'Editar'}
+                        </button>
+                        <button
+                          type="button"
+                          className="button ghost"
+                          onClick={() => handleDeleteCoupon(coupon.id)}
+                          disabled={isCouponActionDisabled}
+                        >
+                          Excluir
+                        </button>
+                      </div>
+                    ) : null}
+                    {isAdmin && isEditingCoupon ? (
+                      <form
+                        className="form-grid coupon-edit-form"
+                        onSubmit={handleSubmitEditCoupon((values) =>
+                          updateCouponMutation.mutate(values),
+                        )}
+                      >
+                        <label>
+                          Código
+                          <input placeholder="EX: JAVA20" {...registerEditCoupon('code')} />
+                          {editErrors.code ? <small>{editErrors.code.message}</small> : null}
+                        </label>
+                        <label>
+                          Desconto (%)
+                          <input
+                            type="number"
+                            min={1}
+                            max={100}
+                            {...registerEditCoupon('discount', { valueAsNumber: true })}
+                          />
+                          {editErrors.discount ? (
+                            <small>{editErrors.discount.message}</small>
+                          ) : null}
+                        </label>
+                        <label>
+                          Validade
+                          <input type="datetime-local" {...registerEditCoupon('valid')} />
+                          {editErrors.valid ? <small>{editErrors.valid.message}</small> : null}
+                        </label>
+                        <div className="form-actions">
+                          <button
+                            type="submit"
+                            className="button solid"
+                            disabled={updateCouponMutation.isPending}
+                          >
+                            {updateCouponMutation.isPending ? 'Salvando...' : 'Salvar'}
+                          </button>
+                          <button
+                            type="button"
+                            className="button ghost"
+                            onClick={() => setEditingCouponId(null)}
+                            disabled={updateCouponMutation.isPending}
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                        {updateCouponMutation.isError ? (
+                          <p className="status-inline error">
+                            Não foi possível atualizar o cupom. Tente novamente.
+                          </p>
+                        ) : null}
+                      </form>
+                    ) : null}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </article>

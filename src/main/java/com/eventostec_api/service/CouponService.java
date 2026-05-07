@@ -34,6 +34,32 @@ public class CouponService {
         return couponRepository.save(coupon);
     }
 
+    public Coupon updateCoupon(UUID eventId, UUID couponId, CouponRequestDTO couponData) {
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(() -> new IllegalArgumentException("Coupon not found with id: " + couponId));
+
+        if (coupon.getEvent() == null || !coupon.getEvent().getId().equals(eventId)) {
+            throw new IllegalArgumentException("Coupon does not belong to event: " + eventId);
+        }
+
+        coupon.setCode(couponData.code());
+        coupon.setDiscount(couponData.discount());
+        coupon.setValid(new Date(couponData.valid()));
+
+        return couponRepository.save(coupon);
+    }
+
+    public void deleteCoupon(UUID eventId, UUID couponId) {
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(() -> new IllegalArgumentException("Coupon not found with id: " + couponId));
+
+        if (coupon.getEvent() == null || !coupon.getEvent().getId().equals(eventId)) {
+            throw new IllegalArgumentException("Coupon does not belong to event: " + eventId);
+        }
+
+        couponRepository.delete(coupon);
+    }
+
     public List<Coupon> consultCoupons(UUID eventId, Date currentDate) {
         return couponRepository.findByEventIdAndValidAfter(eventId, currentDate);
     }

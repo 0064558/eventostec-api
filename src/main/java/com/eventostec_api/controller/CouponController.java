@@ -21,4 +21,18 @@ public class CouponController {
         couponService.addCouponToEvent(eventId, couponData);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/events/{eventId}/coupons/{couponId}")
+    public ResponseEntity<Void> updateCoupon(@PathVariable UUID eventId,
+                                             @PathVariable UUID couponId,
+                                             @RequestBody CouponRequestDTO couponData) {
+        couponService.updateCoupon(eventId, couponId, couponData);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/events/{eventId}/coupons/{couponId}")
+    public ResponseEntity<Void> deleteCoupon(@PathVariable UUID eventId, @PathVariable UUID couponId) {
+        couponService.deleteCoupon(eventId, couponId);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -144,6 +144,7 @@ public class EventService {
         List<Coupon> coupons = couponService.consultCoupons(eventId, new Date());
         List<EventDetailsDTO.CouponDTO> couponDTOS = coupons.stream()
                 .map(coupon -> new EventDetailsDTO.CouponDTO(
+                coupon.getId(),
                         coupon.getCode(),
                         coupon.getDiscount(),
                         coupon.getValid()))

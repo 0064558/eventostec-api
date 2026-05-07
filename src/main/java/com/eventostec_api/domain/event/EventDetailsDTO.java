@@ -19,6 +19,7 @@ public record EventDetailsDTO(
 ) {
     // DTO aninhado para representar os detalhes de um cupom de desconto, contendo informações como código do cupom, valor do desconto e data de validade.
     public record CouponDTO(
+            UUID id,
             String code,
             Double discount,
             Date validUntil) {
