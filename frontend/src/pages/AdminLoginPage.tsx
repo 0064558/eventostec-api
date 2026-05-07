@@ -96,6 +96,16 @@ export function AdminLoginPage() {
           ) : null}
         </form>
       </article>
+
+      <footer className="main-footer">
+        <div className="footer-content">
+          <div className="brand-minimal">
+            <div className="brand-badge-small"></div>
+            <span className="brand-title">EVNT</span>
+          </div>
+          <p>© 2026 Desenvolvido por <strong>Rodrigo Alexandre</strong></p>
+        </div>
+      </footer>
     </section>
   );
 }

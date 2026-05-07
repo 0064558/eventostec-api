@@ -50,10 +50,11 @@ export function HomePage() {
   return (
     <section className="home-page">
       <div className="hero-panel">
-        <h1>Seu próximo momento acontece aqui.</h1>
+        <span className="eyebrow">✨ O que tem pra hoje?</span>
+        <h1>Explore, conecte-se e viva a experiência.</h1>
         <p>
-          No EVNT, você descobre workshops, meetups e eventos de todos os tipos. 
-          Filtre por localização, acompanhe datas e garanta cupons exclusivos em tempo real.
+          Workshops, meetups ou festas: encontre eventos em qualquer lugar do país.
+          Use nossos filtros inteligentes para navegar por datas e cidades, e aproveite cupons de desconto antes que acabem.
         </p>
         <div className="hero-actions">
           {isAdmin ? (

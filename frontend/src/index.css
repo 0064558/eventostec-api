@@ -86,6 +86,10 @@ p {
   animation: page-rise 0.6s ease both;
 }
 
+.details-grid > .panel:first-child {
+  grid-column: 1 / -1;
+}
+
 .top-nav {
   position: sticky;
   top: 1rem;
@@ -330,22 +334,6 @@ textarea:focus {
   border-color: transparent;
 }
 
-.password-field {
-  display: flex;
-  gap: 0.6rem;
-  align-items: center;
-}
-
-.password-field input {
-  flex: 1;
-}
-
-.password-toggle {
-  padding: 0.55rem 0.9rem;
-  border-radius: 12px;
-  white-space: nowrap;
-}
-
 .inline-fields {
   display: grid;
   grid-template-columns: 1fr 120px;
@@ -574,6 +562,17 @@ textarea:focus-visible {
   gap: 1rem;
 }
 
+.details-page .main-footer {
+  grid-column: 1 / -1; /* Faz o footer ocupar a largura total do grid */
+  width: 100%;
+}
+
+.details-grid.single-column {
+  grid-template-columns: 1fr; 
+  max-width: 800px; 
+  margin: 0 auto;   
+}
+
 .coupon-list {
   list-style: none;
   margin: 0;
@@ -585,28 +584,12 @@ textarea:focus-visible {
 .coupon-list li {
   border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 0.75rem 0.9rem;
-  display: grid;
-  gap: 0.65rem;
-  align-items: start;
-}
-
-.coupon-row {
+  padding: 1rem; /* Aumentei um pouco o respiro */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.coupon-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.coupon-edit-form {
-  margin-top: 0.25rem;
+  width: 100%; /* Garante que o li use todo o espaço do container */
+  background: var(--surface-strong);
 }
 
 .coupon-list p {
@@ -614,7 +597,7 @@ textarea:focus-visible {
   font-size: 0.84rem;
 }
 
-.coupon-list .coupon-discount {
+.coupon-list span {
   border-radius: 999px;
   padding: 0.3rem 0.58rem;
   background: rgba(66, 216, 197, 0.2);
@@ -719,6 +702,11 @@ code {
   .details-hero,
   .details-grid {
     grid-template-columns: 1fr;
+  }
+
+  .coupon-list li {
+    flex-direction: column; /* Em telas muito pequenas, empilha o código e o desconto */
+    align-items: flex-start;
   }
 }
 
