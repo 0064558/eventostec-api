@@ -201,6 +201,9 @@ p {
   height: 250px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(66, 216, 197, 0.3), transparent 70%);
+  /* Adicione as duas linhas abaixo */
+  pointer-events: none; 
+  z-index: 0;
 }
 
 .hero-panel::before {
@@ -213,6 +216,14 @@ p {
   border-radius: 40% 60% 55% 45%;
   background: radial-gradient(circle at 30% 30%, rgba(255, 182, 95, 0.32), transparent 65%);
   opacity: 0.8;
+  /* Adicione as duas linhas abaixo */
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero-panel > * {
+  position: relative;
+  z-index: 1;
 }
 
 .hero-panel h1 {
@@ -665,6 +676,11 @@ code {
 
   .hero-panel {
     padding: 1.4rem;
+  }
+
+  .hero-panel::before, 
+  .hero-panel::after {
+    display: none; 
   }
 
   .event-card-actions,
