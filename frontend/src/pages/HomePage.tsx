@@ -50,11 +50,10 @@ export function HomePage() {
   return (
     <section className="home-page">
       <div className="hero-panel">
-        <p className="eyebrow">Comunidade tech em movimento</p>
-        <h1>Descubra eventos, workshops e meetups sem perder o ritmo.</h1>
+        <h1>Seu próximo momento acontece aqui.</h1>
         <p>
-          Navegue por eventos futuros, filtre por local e data, e acompanhe os
-          cupons disponíveis em tempo real.
+          No EVNT, você descobre workshops, meetups e eventos de todos os tipos. 
+          Filtre por localização, acompanhe datas e garanta cupons exclusivos em tempo real.
         </p>
         <div className="hero-actions">
           {isAdmin ? (
@@ -168,6 +167,18 @@ export function HomePage() {
           </button>
         </div>
       </section>
+
+      <footer className="main-footer">
+        <div className="footer-content">
+          <div className="brand-minimal">
+            <div className="brand-badge-small"></div>
+            <span className="brand-title">EVNT</span>
+          </div>
+          <p>© 2026 Desenvolvido por <strong>Rodrigo Alexandre</strong></p>
+        </div>
+      </footer>
     </section>
+
   );
+
 }

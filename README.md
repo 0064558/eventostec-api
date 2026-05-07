@@ -1,4 +1,4 @@
-# Eventos API
+# EVNT
 
 API REST para cadastro e consulta de eventos, com suporte a cupons de desconto e upload de imagem para AWS S3.
 

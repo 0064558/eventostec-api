@@ -28,7 +28,7 @@ function App() {
           <div className="brand">
             <span className="brand-badge" />
             <div>
-              <p className="brand-title">Eventos API</p>
+              <p className="brand-title">EVNT</p>
             </div>
           </div>
           <nav className="nav-links">
