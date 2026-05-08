@@ -286,6 +286,25 @@ p {
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  position: relative;
+  overflow: hidden;
+}
+
+.eyebrow::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.637),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: shimmer 3s infinite;
 }
 
 .filters-panel,
@@ -383,7 +402,7 @@ small {
 }
 
 .event-card:hover {
-  transform: translateY(-10px) scale(1.02); /* O pulinho e um leve aumento */
+  transform: translateY(-10px) scale(1.02);
   box-shadow: 0 25px 50px rgba(34, 56, 119, 0.2);
   border-color: var(--mint);
 }
@@ -719,6 +738,18 @@ code {
     blink-caret 0.75s step-end infinite;
 }
 
+@keyframes shimmer {
+  0% { 
+    left: -100%; 
+  }
+  90% { 
+    left: 150%; 
+  }
+  100% { 
+    left: 150%; 
+  }
+}
+
 @keyframes typing {
   from { width: 0; }
   to { width: 100%; }
@@ -858,7 +889,7 @@ code {
 
 @media (max-width: 480px) {
   .hero-panel h1.typewriter-title {
-    font-size: 0.9rem !important;
+    font-size: clamp(0.85rem, 4.9vw, 0.9rem) !important;
   }
 }
 
