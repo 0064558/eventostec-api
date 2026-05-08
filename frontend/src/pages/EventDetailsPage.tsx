@@ -372,7 +372,7 @@ export function EventDetailsPage() {
             <div className="brand-badge-small"></div>
             <strong>EVNT</strong>
           </div>
-          <p><strong>Desenvolvido por Rodrigo Alexandre - © 2026</strong></p>
+          <p>© 2026 — Desenvolvido por Rodrigo Alexandre</p>
         </div>
       </footer>
     </section>

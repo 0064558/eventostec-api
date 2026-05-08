@@ -180,10 +180,10 @@ export function HomePage() {
 
           <div className="footer-info">
             <p>
-              © 2026 — Desenvolvido por <strong>Rodrigo Alexandre</strong>
+              © 2026 — Desenvolvido por Rodrigo Alexandre
               {!isAdmin && (
                 <>
-                  <span className="footer-separator">•</span>
+                  <span className="footer-separator">.</span>
                   <Link to="/admin/login" className="admin-link-discrete">
                     Admin
                   </Link>
