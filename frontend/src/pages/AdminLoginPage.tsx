@@ -57,7 +57,7 @@ export function AdminLoginPage() {
         >
           <label>
             Email
-            <input type="email" placeholder="admin@admin.com" {...register('email')} />
+            <input type="email" placeholder="" {...register('email')} />
             {errors.email ? <small>{errors.email.message}</small> : null}
           </label>
 
@@ -66,7 +66,7 @@ export function AdminLoginPage() {
             <div className="password-field">
               <input
                 type={showPassword ? 'text' : 'password'}
-                placeholder="Sua senha"
+                placeholder=""
                 {...register('password')}
               />
               <button

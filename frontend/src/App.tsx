@@ -41,7 +41,8 @@ function App() {
                 Sair
               </button>
             ) : (
-              <NavLink to="/admin/login">Admin</NavLink>
+              //<NavLink to="/admin/login">Login</NavLink>
+              null
             )}
           </nav>
         </header>

@@ -64,10 +64,11 @@ export function HomePage() {
           ) : null}
         </div>
         {!isAdmin ? (
-          <p className="admin-cta">
+          /*<p className="admin-cta">
             É um administrador?{' '}
             <Link to="/admin/login">Faça login para gerenciar eventos</Link>.
-          </p>
+          </p>*/
+          null
         ) : null}
       </div>
 
@@ -84,7 +85,7 @@ export function HomePage() {
             <input
               value={filters.title}
               onChange={(event) => updateFilter('title', event.target.value)}
-              placeholder="Ex: Java, AWS, React"
+              placeholder="Ex: Summit, Workshop..."
             />
           </label>
           <label>
@@ -169,13 +170,27 @@ export function HomePage() {
         </div>
       </section>
 
+
       <footer className="main-footer">
         <div className="footer-content">
           <div className="brand-minimal">
             <div className="brand-badge-small"></div>
             <span className="brand-title">EVNT</span>
           </div>
-          <p><strong>Desenvolvido por Rodrigo Alexandre - © 2026</strong></p>
+
+          <div className="footer-info">
+            <p>
+              © 2026 — Desenvolvido por <strong>Rodrigo Alexandre</strong>
+              {!isAdmin && (
+                <>
+                  <span className="footer-separator">•</span>
+                  <Link to="/admin/login" className="admin-link-discrete">
+                    Admin
+                  </Link>
+                </>
+              )}
+            </p>
+          </div>
         </div>
       </footer>
     </section>
