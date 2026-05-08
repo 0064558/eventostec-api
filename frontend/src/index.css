@@ -738,32 +738,58 @@ code {
 
 @media (max-width: 760px) {
   .app-shell {
-    width: min(1180px, 100% - 1rem);
+    width: calc(100% - 1rem);
+    margin: 0.5rem auto 1.5rem; /* Reduzi a margem externa */
   }
 
   .top-nav {
-    flex-direction: column;
-    align-items: flex-start;
+    /* Mantém os itens principais alinhados horizontalmente ou em wrap apertado */
+    padding: 0.75rem 1rem;
+    gap: 0.5rem;
+    top: 0.5rem;
+    border-radius: var(--radius-md); /* Raio menor para mobile */
+  }
+
+  .brand-badge {
+    height: 30px; /* Badge menor */
+    width: 10px;
+  }
+
+  .brand-title {
+    font-size: 0.9rem; /* Título menor */
+  }
+
+  .brand-subtitle {
+    display: none; /* Esconde o subtítulo no mobile para ganhar espaço */
   }
 
   .nav-links {
-    width: 100%;
+    gap: 0.25rem;
   }
 
-  .nav-links a,
+  .nav-links a {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem; /* Fonte menor para os links */
+  }
+
   .nav-links .button {
-    flex: 1;
-    text-align: center;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  /* --- Ajustes de conteúdo para acompanhar --- */
+  .hero-panel {
+    padding: 1.4rem;
+  }
+
+  .hero-panel h1 {
+    font-size: 1.6rem;
   }
 
   .filters-grid,
   .events-grid,
   .inline-fields {
     grid-template-columns: 1fr;
-  }
-
-  .hero-panel {
-    padding: 1.4rem;
   }
 
   .hero-panel::before, 
