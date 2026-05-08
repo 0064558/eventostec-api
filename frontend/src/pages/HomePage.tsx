@@ -51,7 +51,7 @@ export function HomePage() {
     <section className="home-page">
       <div className="hero-panel">
         <span className="eyebrow">✨ O que tem pra hoje?</span>
-        <h1>Explore, conecte-se e viva a experiência.</h1>
+        <h1 className='typewriter-title'>Explore, conecte-se e viva a experiência.</h1>
         <p>
           Workshops, meetups ou festas: encontre eventos em qualquer lugar do país.
           Use nossos filtros inteligentes para navegar por datas e cidades, e aproveite cupons de desconto antes que acabem.
