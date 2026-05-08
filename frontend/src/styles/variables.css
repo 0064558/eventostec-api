@@ -1,0 +1,20 @@
+:root {
+  --bg-0: #f5f8ff;
+  --bg-1: #f9f4ef;
+  --ink-900: #11152c;
+  --ink-700: #2d365f;
+  --ink-500: #5b668f;
+  --surface: #ffffffcc;
+  --surface-strong: #ffffff;
+  --line: #d9deef;
+  --mint: #42d8c5;
+  --mint-strong: #1da493;
+  --coral: #ff715d;
+  --amber: #ffb65f;
+  --danger: #cb3f4f;
+  --success: #178256;
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --shadow-soft: 0 20px 45px rgba(34, 56, 119, 0.12);
+  --shadow-card: 0 12px 24px rgba(33, 49, 97, 0.08);
+}
